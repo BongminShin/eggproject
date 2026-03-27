@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { Search } from 'lucide-react'
+import { getListings } from '@/lib/data/listings'
+import ListingCard from '@/components/listings/ListingCard'
 
 const CATEGORIES = [
   { slug: 'electronics', label: 'Electronics', icon: '💻' },
@@ -16,7 +18,10 @@ const CATEGORIES = [
   { slug: 'other', label: 'Other', icon: '📦' },
 ]
 
-export default function HomePage() {
+export default async function HomePage() {
+  const listings = await getListings({ sort: 'newest' })
+  const recentListings = listings.slice(0, 8)
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -71,17 +76,25 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="rounded-2xl border-2 border-dashed border-warm-200 py-16 text-center">
-            <p className="text-4xl mb-3">🥚</p>
-            <p className="text-warm-500 font-medium">No listings yet</p>
-            <p className="text-warm-400 text-sm mt-1">Be the first to post something!</p>
-            <Link
-              href="/listings/new"
-              className="inline-block mt-4 px-5 py-2 bg-egg-500 hover:bg-egg-600 text-white text-sm font-semibold rounded-full transition-colors"
-            >
-              Post a listing
-            </Link>
-          </div>
+          {recentListings.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {recentListings.map((listing: any) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border-2 border-dashed border-warm-200 py-16 text-center">
+              <p className="text-4xl mb-3">🥚</p>
+              <p className="text-warm-500 font-medium">No listings yet</p>
+              <p className="text-warm-400 text-sm mt-1">Be the first to post something!</p>
+              <Link
+                href="/listings/new"
+                className="inline-block mt-4 px-5 py-2 bg-egg-500 hover:bg-egg-600 text-white text-sm font-semibold rounded-full transition-colors"
+              >
+                Post a listing
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
